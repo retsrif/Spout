@@ -356,42 +356,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 	}
 
-	private Color getColor(BlockMaterial m) {
-		if (!m.isSolid()) {
-			return new Color(0, 0, 0);
-		}
-		switch (m.getId()) {
-		case 78:
-			return new Color(255, 255, 255);
-		case 24:
-		case 12:
-			return new Color(210, 210, 150);
-		case 10:
-			return new Color(200, 50, 50);
-		case 9:
-		case 8:
-			return new Color(150, 150, 200);
-		case 7:
-			return new Color(50, 50, 50);
-		case 4:
-			return new Color(100, 100, 100);
-		case 17:
-		case 3:
-			return new Color(110, 75, 35);
-		case 18:
-		case 2:
-			return new Color(55, 140, 55);
-		case 21:
-		case 16:
-		case 15:
-		case 14:
-		case 13:
-		case 1:
-		default:
-			return new Color(150, 150, 150);
-		}
-	}
-
 	private static void unpackLwjgl() {
 		String[] files;
 		String osPath;

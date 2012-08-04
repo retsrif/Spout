@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
-import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.ComponentEntityBase;
 import org.spout.api.entity.component.Controller;
@@ -78,7 +77,6 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	private boolean attached = false;
 	private int viewDistance;
 	private Chunk chunk;
-	private CollisionModel collision;
 	private Controller controller;
 	private EntityManager entityManager;
 	private Model model;
@@ -184,73 +182,6 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
 		}
 		Profiler.stop();
-	}
-
-	/**
-	 * Called right before resolving collisions. This is necessary to make sure all entities
-	 * get their collisions set.
-	 *
-	 * @return
-	 */
-	public boolean preResolve() {
-		//Do not perform collisions if position or world or controller is null
-		if (getPosition() == null || getWorld() == null || controllerLive.get() == null) {
-			return false;
-		}
-
-		//This will let SpoutRegion know it should call resolve for this entity.
-		return true;
-	}
-
-	/**
-	 * Called when the stage 1 is finished, collisions need to be resolved and
-	 * move events fired.
-	 */
-	public void resolve() {
-//		Point to = null;
-//
-//		//Handle Player collisions elsewhere
-//		if (collision != null && !(controllerLive.get() instanceof PlayerController)) {
-//			//Move the collision volume to the new position
-//			collision.setPosition(getPosition());
-//
-//			List<CollisionVolume> colliding = ((SpoutWorld) getPosition().getWorld()).getCollidingObject(collision);
-//			for (CollisionVolume box : colliding) {
-//				Vector3 resolved = collision.resolve(box);
-//				if (resolved != null) {
-//					if (collision.getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
-//						Vector3 offset = getPosition().subtract(lastTransform.getPosition());
-//						resolved = resolved.subtract(getPosition());
-//						Spout.log("Controller: " + controllerLive.get().toString());
-//						Spout.log("Pre-Collision position: " + getPosition().toString());
-//						to = lastTransform.getPosition().add(getPosition().add(MathHelper.add(resolved, offset)));
-//						Spout.log("Adjusted Collision position: " + to.toString());
-//					}
-//					//Controller modify the result of collisions "after the fact" but before entity move events are fired.
-//					controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
-//				}
-//			}
-//		}
-//		//Handle throwing proper EntityMoveEvent
-//		if (!lastTransform.getPosition().equals(transform.getPosition())) {
-//			EntityMoveEvent event;
-//			//Check for collision offset
-//			if (to != null && !lastTransform.getPosition().equals(to)) {
-//				event = new EntityMoveEvent(this, lastTransform.getPosition(), to);
-//				Spout.getEngine().getEventManager().callEvent(event);
-//				if (!event.isCancelled()) {
-//					setPosition(to);
-//				}
-//			} else {
-//				event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
-//				Spout.getEngine().getEventManager().callEvent(event);
-//				if (event.isCancelled()) {
-//					setPosition(lastTransform.getPosition());
-//				}
-//			}
-//		}
-
-		lastTransform = transform.copy();
 	}
 
 	@Override
@@ -459,21 +390,6 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	@Override
 	public Model getModel() {
 		return model;
-	}
-
-	// TODO - needs to be made thread safe
-	@Override
-	public void setCollision(CollisionModel model) {
-		collision = model;
-		if (collision != null) {
-			collision.setPosition(this.transform.getPosition());
-		}
-	}
-
-	// TODO - needs to be made thread safe
-	@Override
-	public CollisionModel getCollision() {
-		return collision;
 	}
 
 	@Override

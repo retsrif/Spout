@@ -34,8 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,9 +42,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.Spout;
-import org.spout.api.collision.BoundingBox;
-import org.spout.api.collision.CollisionModel;
-import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
@@ -726,36 +721,6 @@ public final class SpoutWorld extends AsyncManager implements World {
 		return Collections.unmodifiableSet(players);
 	}
 
-	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
-		//TODO Make this more general
-		final int minX = MathHelper.floor(model.getVolume().getPosition().getX());
-		final int minY = MathHelper.floor(model.getVolume().getPosition().getY());
-		final int minZ = MathHelper.floor(model.getVolume().getPosition().getZ());
-		final int maxX = minX + 1;
-		final int maxY = minY + 1;
-		final int maxZ = minZ + 1;
-
-		final LinkedList<CollisionVolume> colliding = new LinkedList<CollisionVolume>();
-
-		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
-
-		for (int dx = minX; dx < maxX; dx++) {
-			for (int dy = minY; dy < maxY; dy++) {
-				for (int dz = minZ; dz < maxZ; dz++) {
-					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
-					mutable.set((BoundingBox) material.getBoundingArea());
-					BoundingBox box = mutable.offset(dx, dy, dz);
-					if (box.intersects(model.getVolume())) {
-						colliding.add(mutable.clone());
-					}
-				}
-			}
-		}
-
-		//TODO: colliding entities
-		return colliding;
-	}
-
 	@Override
 	public int getSurfaceHeight(int x, int z, boolean load) {
 		SpoutColumn column = getColumn(x, z, load);
@@ -1080,7 +1045,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
 	 * @param position to search from
-	 * @param entity to ignore while searching
+	 * @param ignore to ignore while searching
 	 * @param range to search
 	 * @return nearest player
 	 */

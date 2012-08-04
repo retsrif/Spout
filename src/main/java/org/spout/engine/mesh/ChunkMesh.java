@@ -206,9 +206,10 @@ public class ChunkMesh extends BaseMesh {
 	}
 
 	private Color getColor(BlockMaterial m) {
-		if (!m.isSolid()) {
-			return new Color(0, 0, 0);
-		}
+		//TODO getCollisionShape != null once its in the API
+//		if (!m.isSolid()) {
+//			return new Color(0, 0, 0);
+//		}
 		switch (m.getId()) {
 		case 78:
 			return new Color(255, 255, 255);
